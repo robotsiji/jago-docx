@@ -1,0 +1,31 @@
+{
+  "template_name": "academic_paper",
+  "heading_font": "Arial",
+  "body_font": "Arial",
+  "margins_inches": 1.0,
+  "line_spacing": 1.15,
+  "space_after_pt": 6.0,
+  "front_matter": {
+    "table_of_contents": true,
+    "list_of_figures": true,
+    "list_of_tables": true
+  },
+  "citation_style": "APA_7th",
+  "citation_target": "footnote",
+  "quotations": {
+    "inline_max_words": 40,
+    "blockquote_indent_inches": 0.5
+  },
+  "captions_position": "strictly_underneath",
+  "formulas": {
+    "engine": "OMML",
+    "editable": true,
+    "align": "center",
+    "numbering": "right"
+  },
+  "footer": {
+    "format": "Page {PAGE} of {NUMPAGES}",
+    "align": "right",
+    "editable": true
+  }
+}
