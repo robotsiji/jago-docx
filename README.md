@@ -235,33 +235,6 @@ jago-docx/
 
 ---
 
-## Running Tests
-
-Run the complete test suite:
-
-```bash
-python -m unittest tests/test_all_features.py
-```
-
-Output:
-```
-Ran 7 tests in 0.292s
-
-OK
-```
-
----
-
-## Sharing to GitHub
-
-To push `jago-docx` to your own GitHub account:
-
-```bash
-cd jago-docx
-git remote add origin https://github.com/robotsiji/jago-docx.git
-git branch -M main
-git push -u origin main
-```
 
 ---
 
