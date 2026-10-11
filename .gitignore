@@ -29,3 +29,8 @@ Thumbs.db
 # Scratch temporary test files
 *.tmp
 temp_*/
+
+# Microsoft Word temporary lock files
+~$*.docx
+~$*.doc
+~$*
