@@ -46,6 +46,6 @@ dependencies = [
 jago-docx = "jago_docx.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/username/jago-docx"
-Repository = "https://github.com/username/jago-docx.git"
-Issues = "https://github.com/username/jago-docx/issues"
+Homepage = "https://github.com/robotsiji/jago-docx"
+Repository = "https://github.com/robotsiji/jago-docx.git"
+Issues = "https://github.com/robotsiji/jago-docx/issues"
