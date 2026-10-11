@@ -87,10 +87,6 @@ class JagoDocument:
         # 6. Automatic fields update on open
         enable_update_fields_on_open(self.doc)
 
-        # Optional Title insertion
-        if title:
-            apply_title(self.doc, title)
-
     # -------------------------------------------------------------------------
     # Headings & Typography (Requirements 2 & 5)
     # -------------------------------------------------------------------------

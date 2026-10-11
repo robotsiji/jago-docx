@@ -10,18 +10,27 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from jago_docx import JagoDocument, format_apa_reference
+from generate_sample_assets import create_sample_assets
 
 
 def build_sample():
     out_dir = os.path.dirname(os.path.abspath(__file__))
+    assets_dir = os.path.join(out_dir, "assets")
     out_path = os.path.join(out_dir, "sample_report.docx")
 
+    # Ensure real images are present
+    fig1_path = os.path.join(assets_dir, "architecture_topology.png")
+    fig2_path = os.path.join(assets_dir, "benchmark_chart.png")
+    if not (os.path.exists(fig1_path) and os.path.exists(fig2_path)):
+        create_sample_assets(assets_dir)
+
+    # Initialize document (sets metadata, 1" margins, Arial styles, username author)
     doc = JagoDocument(
         title="High-Performance Microservice Mesh Architecture",
         subject="Technical Architecture Specification"
     )
 
-    # Title & Subtitle
+    # Add Single Title & Subtitle
     doc.add_title(
         "High-Performance Microservice Mesh Architecture",
         subtitle="Zero-Trust Network Topology, Consensus Protocols, and Latency Optimization"
@@ -93,12 +102,14 @@ def build_sample():
         "These equations use native Office Math (OMML) and are completely editable in Word."
     )
 
+    doc.add_heading("3.1 Service Queue Equilibrium", level=2)
     doc.add_formula(
         formula_text="L = λ · W",
         equation_number=1,
         description="Little's Law relating queue length (L), request arrival rate (λ), and wait time (W)."
     )
 
+    doc.add_heading("3.2 Amdahl's Speedup Model", level=2)
     doc.add_formula(
         formula_text="S(p, s) = 1 / ((1 - p) + (p / s))",
         equation_number=2,
@@ -111,27 +122,57 @@ def build_sample():
         "Verification benchmarks were executed across Kubernetes worker nodes in three isolated availability zones."
     )
 
-    headers = ["Service Mesh Pod", "Base Memory", "Peak RPS", "p50 Latency", "p99 Latency"]
-    rows = [
+    # Table 1
+    headers1 = ["Service Mesh Pod", "Base Memory", "Peak RPS", "p50 Latency", "p99 Latency"]
+    rows1 = [
         ["edge-gateway-alpha", "4 GiB", "52,400", "1.4 ms", "5.8 ms"],
         ["auth-session-beta",  "8 GiB", "38,900", "2.1 ms", "7.4 ms"],
         ["order-router-gamma", "16 GiB", "61,200", "1.1 ms", "4.9 ms"],
         ["ledger-event-delta", "32 GiB", "24,500", "3.6 ms", "11.2 ms"],
     ]
     doc.add_table(
-        headers=headers,
-        rows=rows,
+        headers=headers1,
+        rows=rows1,
         caption="Simulated High-Concurrency Throughput and Response Latency across Primary Pod Clusters."
     )
 
     doc.add_paragraph(
-        "The following diagram illustrates network traffic segregation through the Envoy ingress layer."
+        "The following diagram illustrates network traffic segregation and zero-trust mutual-TLS routing through the Envoy ingress layer."
     )
 
+    # Figure 1: Real Image with caption strictly underneath
     doc.add_figure(
-        image_path_or_placeholder="Diagram: Envoy Service Mesh Mutual-TLS Zero-Trust Routing Topology",
-        caption="High-Availability Mutual-TLS Zero-Trust Cluster Boundary Layout.",
-        width_inches=5.5
+        image_path_or_placeholder=fig1_path,
+        caption="High-Availability Multi-Region Network Topology and Ingress Controller Layout.",
+        width_inches=5.8
+    )
+
+    doc.add_paragraph(
+        "Autoscaling parameters and memory allocation ceilings were configured to ensure linear scaling characteristics under sustained burst traffic."
+    )
+
+    # Table 2
+    headers2 = ["Cluster Tier", "Target CPU %", "Min Pods", "Max Pods", "Scale-Up Window"]
+    rows2 = [
+        ["Edge Ingress", "65%", 8, 48, "15 seconds"],
+        ["Authentication Core", "70%", 4, 32, "20 seconds"],
+        ["Transactional DB", "55%", 3, 12, "45 seconds"],
+    ]
+    doc.add_table(
+        headers=headers2,
+        rows=rows2,
+        caption="Horizontal Pod Autoscaler (HPA) Policy Configuration."
+    )
+
+    doc.add_paragraph(
+        "Empirical latency profiles measured across each service pod are displayed in the benchmark chart below."
+    )
+
+    # Figure 2: Real Image with caption strictly underneath
+    doc.add_figure(
+        image_path_or_placeholder=fig2_path,
+        caption="Service Mesh Latency vs. Throughput Scaling Benchmarks Across Cluster Nodes.",
+        width_inches=5.8
     )
 
     # Section 5 - Conclusion

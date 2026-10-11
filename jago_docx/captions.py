@@ -23,54 +23,41 @@ def create_caption_paragraph(doc, label: str, seq_identifier: str, caption_text:
     Creates a caption paragraph located right under the respective visual element.
     Uses Word SEQ field: `<w:fldSimple w:instr="SEQ {seq_identifier} \\* ARABIC"/>`.
     """
-    safe_caption = (
-        caption_text.strip()
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    safe_caption = caption_text.strip()
 
-    xml_str = f"""
-    <w:p {W_NS}>
-      <w:pPr>
-        <w:pStyle w:val="Caption"/>
-        <w:jc w:val="{"center" if align == WD_ALIGN_PARAGRAPH.CENTER else "left"}"/>
-        <w:spacing w:before="80" w:after="200" w:line="240" w:lineRule="auto"/>
-      </w:pPr>
-      <w:r>
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
-          <w:b/>
-          <w:sz w:val="19"/>
-          <w:color w:val="475569"/>
-        </w:rPr>
-        <w:t xml:space="preserve">{label} </w:t>
-      </w:r>
-      <w:fldSimple w:instr="SEQ {seq_identifier} \\* ARABIC">
-        <w:r>
-          <w:rPr>
-            <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
-            <w:b/>
-            <w:sz w:val="19"/>
-            <w:color w:val="475569"/>
-          </w:rPr>
-          <w:t>1</w:t>
-        </w:r>
-      </w:fldSimple>
-      <w:r>
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
-          <w:sz w:val="19"/>
-          <w:color w:val="475569"/>
-        </w:rPr>
-        <w:t xml:space="preserve">: {safe_caption}</w:t>
-      </w:r>
-    </w:p>
-    """
-    elem = parse_xml(xml_str)
-    doc._body._element.append(elem)
-    return elem
+    p = doc.add_paragraph()
+    p.alignment = align
+    p.paragraph_format.space_before = Pt(4)
+    p.paragraph_format.space_after = Pt(12)
+    p.paragraph_format.line_spacing = 1.15
+
+    try:
+        p.style = doc.styles["Caption"]
+    except Exception:
+        pass
+
+    # Run 1: Label (e.g. Table / Figure)
+    r_label = p.add_run(f"{label} ")
+    r_label.font.name = "Arial"
+    r_label.font.bold = True
+    r_label.font.size = Pt(9.5)
+    r_label.font.color.rgb = COLOR_MUTED
+
+    # SEQ Field
+    fld = parse_xml(
+        f'<w:fldSimple {W_NS} w:instr="SEQ {seq_identifier} \\* ARABIC">'
+        f'<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="19"/><w:color w:val="475569"/></w:rPr>'
+        f'<w:t>1</w:t></w:r></w:fldSimple>'
+    )
+    p._p.append(fld)
+
+    # Run 2: Description
+    r_desc = p.add_run(f": {safe_caption}")
+    r_desc.font.name = "Arial"
+    r_desc.font.size = Pt(9.5)
+    r_desc.font.color.rgb = COLOR_MUTED
+
+    return p
 
 
 def _set_cell_margins(cell, top=120, bottom=120, left=160, right=160):

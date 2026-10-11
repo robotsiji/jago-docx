@@ -23,45 +23,24 @@ def enable_update_fields_on_open(doc):
         settings.append(update_elem)
 
 
-def _create_complex_toc_field(instr_text: str, fallback_text: str):
+def _append_toc_field_paragraph(doc, instr_text: str, fallback_text: str):
     """
-    Creates a robust complex field element for TOCs with fallback run.
+    Appends a paragraph with native Word complex TOC field into the document flow.
+    Ensures sequential ordering strictly before sectPr.
+    Sets w:dirty="true" on w:fldChar to trigger Word's automated calculation.
     """
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(4)
+    p.paragraph_format.space_after = Pt(12)
+    p.paragraph_format.line_spacing = 1.15
+
     w_ns = nsdecls("w")
-    xml_str = f"""
-    <w:p {w_ns}>
-      <w:pPr>
-        <w:spacing w:before="0" w:after="120" w:line="276" w:lineRule="auto"/>
-      </w:pPr>
-      <w:r>
-        <w:fldChar w:fldCharType="begin"/>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
-          <w:color w:val="64748B"/>
-          <w:sz w:val="20"/>
-        </w:rPr>
-        <w:instrText xml:space="preserve"> {instr_text} </w:instrText>
-      </w:r>
-      <w:r>
-        <w:fldChar w:fldCharType="separate"/>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
-          <w:color w:val="64748B"/>
-          <w:i/>
-          <w:sz w:val="19"/>
-        </w:rPr>
-        <w:t xml:space="preserve">{fallback_text}</w:t>
-      </w:r>
-      <w:r>
-        <w:fldChar w:fldCharType="end"/>
-      </w:r>
-    </w:p>
-    """
-    return parse_xml(xml_str)
+    p._p.append(parse_xml(f'<w:r {w_ns}><w:fldChar w:fldCharType="begin" w:dirty="true"/></w:r>'))
+    p._p.append(parse_xml(f'<w:r {w_ns}><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr><w:instrText xml:space="preserve"> {instr_text} </w:instrText></w:r>'))
+    p._p.append(parse_xml(f'<w:r {w_ns}><w:fldChar w:fldCharType="separate"/></w:r>'))
+    p._p.append(parse_xml(f'<w:r {w_ns}><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:color w:val="64748B"/><w:i/><w:sz w:val="19"/></w:rPr><w:t xml:space="preserve">{fallback_text}</w:t></w:r>'))
+    p._p.append(parse_xml(f'<w:r {w_ns}><w:fldChar w:fldCharType="end"/></w:r>'))
+    return p
 
 
 def add_table_of_contents_page(doc, title: str = "Table of Contents"):
@@ -83,11 +62,11 @@ def add_table_of_contents_page(doc, title: str = "Table of Contents"):
     run.font.color.rgb = COLOR_HEADING_1
 
     # Insert complex TOC field for Heading levels 1-3
-    toc_p = _create_complex_toc_field(
+    _append_toc_field_paragraph(
+        doc,
         'TOC \\o "1-3" \\h \\z \\u',
-        "[Table of Contents: Automatically refreshed by Word on open. Press F9 to update anytime]"
+        '[Table of Contents: Automatically refreshed by Word on open. Right-click or press F9 to update]'
     )
-    doc._body._element.append(toc_p)
     doc.add_page_break()
 
 
@@ -109,11 +88,11 @@ def add_list_of_figures_page(doc, title: str = "List of Figures"):
     run.font.bold = True
     run.font.color.rgb = COLOR_HEADING_1
 
-    lof_p = _create_complex_toc_field(
+    _append_toc_field_paragraph(
+        doc,
         'TOC \\c "Figure" \\h \\z',
-        "[List of Figures: Automatically populated by Word. Press F9 to update]"
+        '[List of Figures: Automatically populated by Word. Right-click or press F9 to update]'
     )
-    doc._body._element.append(lof_p)
     doc.add_page_break()
 
 
@@ -135,9 +114,9 @@ def add_list_of_tables_page(doc, title: str = "List of Tables"):
     run.font.bold = True
     run.font.color.rgb = COLOR_HEADING_1
 
-    lot_p = _create_complex_toc_field(
+    _append_toc_field_paragraph(
+        doc,
         'TOC \\c "Table" \\h \\z',
-        "[List of Tables: Automatically populated by Word. Press F9 to update]"
+        '[List of Tables: Automatically populated by Word. Right-click or press F9 to update]'
     )
-    doc._body._element.append(lot_p)
     doc.add_page_break()
