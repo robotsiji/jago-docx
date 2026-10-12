@@ -1,6 +1,11 @@
-# Jago Docx 📄⚡
+<p align="center">
+  <img src="docs/images/logo.png" alt="Jago Docx Logo" width="180" />
+</p>
+
+# Jago Docx 🐓📄⚡
 
 > **Expert Anti-Slop Microsoft Word (`.docx`) Document Generator for AI Agents and Developers**  
+> *"Jago" in Bahasa Indonesia means expert, guru, master (Ayam Jago = champion rooster)*  
 > Formatted according to Microsoft Docs guidelines, APA 7th edition footnotes, Arial heading hierarchy, native editable formulas, and OpenXML automation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
